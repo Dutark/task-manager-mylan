@@ -14,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Python / Node
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -37,6 +38,7 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
+      # Hadolint / Checkov
       - name: Run pre-commit
         run: pre-commit run --all-files
 
@@ -48,3 +50,14 @@ jobs:
       - name: Security scan Dockerfiles with Checkov
         run: |
           docker run --rm -v "${{ github.workspace }}:/workdir" bridgecrew/checkov -d /workdir
+
+      # TRIVY
+      - name: Scan backend image with Trivy
+        run: |
+          docker build -t task-manager-backend ./backend
+          docker run --rm aquasec/trivy image task-manager-backend
+
+      - name: Scan frontend image with Trivy
+        run: |
+          docker build -t task-manager-frontend ./frontend
+          docker run --rm aquasec/trivy image task-manager-frontend
