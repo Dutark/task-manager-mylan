@@ -1,4 +1,4 @@
-name: Pre-commit checks
+name: Pre-commit + Docker checks
 
 on:
   pull_request:
@@ -39,3 +39,12 @@ jobs:
 
       - name: Run pre-commit
         run: pre-commit run --all-files
+
+      - name: Lint Dockerfiles with Hadolint
+        run: |
+          docker run --rm -i hadolint/hadolint < backend/Dockerfile
+          docker run --rm -i hadolint/hadolint < frontend/Dockerfile
+
+      - name: Security scan Dockerfiles with Checkov
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/workdir" bridgecrew/checkov -d /workdir
