@@ -23,10 +23,9 @@ repos:
     hooks:
       - id: pytest-backend
         name: Run backend tests
-        entry: pytest backend
-        language: python
+        entry: bash -c 'PYTHONDONTWRITEBYTECODE=1 pytest backend --cache-clear'
+        language: system
         pass_filenames: false
-        additional_dependencies: [pytest]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v8.48.0
