@@ -38,26 +38,42 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-      # Hadolint / Checkov
+      # Run pre-commit hooks
       - name: Run pre-commit
         run: pre-commit run --all-files
 
-      - name: Lint Dockerfiles with Hadolint
+      # Lint Dockerfiles with Hadolint
+      - name: Lint backend Dockerfile with Hadolint
         run: |
-          docker run --rm -i hadolint/hadolint < backend/Dockerfile
-          docker run --rm -i hadolint/hadolint < frontend/Dockerfile
+          docker run --rm -v "${{ github.workspace }}/backend:/workdir" hadolint/hadolint /workdir/Dockerfile
 
-      - name: Security scan Dockerfiles with Checkov
+      - name: Lint frontend Dockerfile with Hadolint
         run: |
-          docker run --rm -v "${{ github.workspace }}:/workdir" bridgecrew/checkov -d /workdir
+          docker run --rm -v "${{ github.workspace }}/frontend:/workdir" hadolint/hadolint /workdir/Dockerfile
 
-      # TRIVY
-      - name: Scan backend image with Trivy
+      # Security scan Dockerfiles with Checkov
+      - name: Scan backend Dockerfile with Checkov
+        run: |
+          docker run --rm -v "${{ github.workspace }}/backend:/workdir" bridgecrew/checkov -d /workdir
+
+      - name: Scan frontend Dockerfile with Checkov
+        run: |
+          docker run --rm -v "${{ github.workspace }}/frontend:/workdir" bridgecrew/checkov -d /workdir
+
+      # Install Trivy CLI
+      - name: Install Trivy
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.43.2_Linux-64bit.deb
+          sudo dpkg -i trivy_0.43.2_Linux-64bit.deb
+
+      # Scan Docker images with Trivy
+      - name: Build and scan backend image with Trivy
         run: |
           docker build -t task-manager-backend ./backend
-          docker run --rm aquasec/trivy image task-manager-backend
+          trivy image task-manager-backend
 
-      - name: Scan frontend image with Trivy
+      - name: Build and scan frontend image with Trivy
         run: |
           docker build -t task-manager-frontend ./frontend
-          docker run --rm aquasec/trivy image task-manager-frontend
+          trivy image task-manager-frontend
