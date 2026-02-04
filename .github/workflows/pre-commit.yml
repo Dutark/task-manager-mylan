@@ -47,13 +47,13 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}/backend:/workdir" \
-            hadolint/hadolint hadolint /workdir/Dockerfile
+            hadolint/hadolint hadolint --failure-threshold error /workdir/Dockerfile
 
       - name: Lint frontend Dockerfile with Hadolint
         run: |
           docker run --rm \
             -v "${{ github.workspace }}/frontend:/workdir" \
-            hadolint/hadolint hadolint /workdir/Dockerfile
+            hadolint/hadolint hadolint --failure-threshold error /workdir/Dockerfile
 
       # Security scan Dockerfiles with Checkov
       - name: Scan backend Dockerfile with Checkov
