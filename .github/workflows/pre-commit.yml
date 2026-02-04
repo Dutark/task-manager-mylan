@@ -67,9 +67,8 @@ jobs:
       # Install Trivy CLI
       - name: Install Trivy
         run: |
-          sudo apt-get update && sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.43.2_Linux-64bit.deb
-          sudo dpkg -i trivy_0.43.2_Linux-64bit.deb
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.69.0/trivy_0.69.0_Linux-64bit.deb
+          sudo dpkg -i trivy_0.69.0_Linux-64bit.deb
 
       # Scan Docker images with Trivy
       - name: Build and scan backend image with Trivy
