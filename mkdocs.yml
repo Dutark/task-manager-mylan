@@ -1,0 +1,8 @@
+site_name: Task Manager Documentation
+theme:
+  name: material
+nav:
+  - Accueil: index.md
+  - Backend: backend.md
+  - Frontend: frontend.md
+  - API: api.md
